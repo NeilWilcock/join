@@ -34,6 +34,10 @@
   <h1 id="title">You're invited to WilQue</h1>
   <p id="line">Opening WilQue…</p>
   <a id="open" class="btn" href="#">Open WilQue</a>
+  <button id="copy" class="btn" style="display:none;background:#ffffff1a;color:var(--ink)">Copy invite</button>
+  <p class="small" id="steps" style="display:none">Still here? This app may not be able to open WilQue.
+    Tap <b>Copy invite</b>, open <b>WilQue</b> yourself and paste it into the code boxes.<br>
+    Or press <b>&middot;&middot;&middot;</b> / share and choose <b>Open in Safari</b>, then tap Open WilQue.</p>
   <p class="small" id="help">Tap <b>Open</b> if your iPhone asks. Don't have WilQue yet? Install it from the TestFlight link you were sent, then tap this link again.</p>
 </main>
 <script>
@@ -49,10 +53,20 @@
       open.remove(); document.getElementById("help").remove(); return;
     }
     var app = "wilque://join?code=" + encodeURIComponent(code) + (key ? "&ts=" + encodeURIComponent(key) : "");
+    var full = location.href;                         // kept for Copy invite (the address bar is cleared below)
     open.href = app;
     try { history.replaceState(null, "", location.pathname); } catch (e) {}   // the key leaves the address bar / history
     setTimeout(function () { location.href = app; }, 300);
-    setTimeout(function () { document.getElementById("line").textContent = "Didn't open? Tap the button."; }, 2500);
+    var copy = document.getElementById("copy");
+    copy.onclick = function () {
+      var done = function () { copy.textContent = "Copied - now open WilQue and paste"; };
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(full).then(done, function () { prompt("Copy this:", full); });
+      else prompt("Copy this:", full);
+    };
+    setTimeout(function () {
+      document.getElementById("line").textContent = "Didn't open? Tap the button.";
+      copy.style.display = "block"; document.getElementById("steps").style.display = "block";
+    }, 2500);
   })();
 </script>
 </body>
